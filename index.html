@@ -1,700 +1,803 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Dashboard</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { 
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Plus Jakarta Sans', 'sans-serif']
-                    },
-                    colors: {
-                        primary: { 50: '#eff6ff', 100: '#dbeafe', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a' },
-                        emerald: { 50: '#ecfdf5', 100: '#d1fae5', 400: '#34d399', 500: '#10b981', 600: '#059669', 900: '#064e3b' },
-                        slate: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' }
-                    },
-                    boxShadow: {
-                        'glass': '0 8px 32px 0 rgba(15, 23, 42, 0.04)',
-                        'float': '0 20px 40px -15px rgba(15, 23, 42, 0.05)',
-                        'glow-primary': '0 0 20px rgba(59, 130, 246, 0.5)',
-                        'glow-emerald': '0 0 20px rgba(16, 185, 129, 0.5)',
-                    },
-                    backgroundImage: {
-                        'mesh-light': 'radial-gradient(at 0% 0%, hsla(210, 100%, 97%, 1) 0px, transparent 50%), radial-gradient(at 100% 0%, hsla(250, 100%, 98%, 1) 0px, transparent 50%)',
-                        'card-dark': 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                        'card-primary': 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sales Dashboard</title>
+        
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { 
+                            sans: ['Inter', 'sans-serif'],
+                            display: ['Plus Jakarta Sans', 'sans-serif']
+                        },
+                        colors: {
+                            primary: { 50: '#eff6ff', 100: '#dbeafe', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a' },
+                            emerald: { 50: '#ecfdf5', 100: '#d1fae5', 400: '#34d399', 500: '#10b981', 600: '#059669', 900: '#064e3b' },
+                            slate: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' }
+                        },
+                        boxShadow: {
+                            'glass': '0 8px 32px 0 rgba(15, 23, 42, 0.04)',
+                            'float': '0 20px 40px -15px rgba(15, 23, 42, 0.05)',
+                            'glow-primary': '0 0 20px rgba(59, 130, 246, 0.5)',
+                            'glow-emerald': '0 0 20px rgba(16, 185, 129, 0.5)',
+                        },
+                        backgroundImage: {
+                            'mesh-light': 'radial-gradient(at 0% 0%, hsla(210, 100%, 97%, 1) 0px, transparent 50%), radial-gradient(at 100% 0%, hsla(250, 100%, 98%, 1) 0px, transparent 50%)',
+                            'card-dark': 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                            'card-primary': 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+                        }
                     }
                 }
             }
-        }
-    </script>
+        </script>
 
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Babel -->
-    <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.js"></script>
-
-    <style>
-        body { 
-            background-color: #f8fafc; 
-            background-image: radial-gradient(at 0% 0%, hsla(210, 100%, 95%, 1) 0px, transparent 50%), 
-                              radial-gradient(at 100% 0%, hsla(250, 100%, 96%, 1) 0px, transparent 50%);
-            background-attachment: fixed;
-            color: #0f172a; 
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+        <!-- React & ReactDOM -->
+        <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
         
-        .tabular-nums { font-variant-numeric: tabular-nums; }
+        <!-- Babel -->
+        <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
         
-        /* Modern Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        <!-- Lucide Icons -->
+        <script src="https://unpkg.com/lucide@latest"></script>
         
-        @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide-up {
-            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.js"></script>
 
-        /* Smooth Table Hover Transitions */
-        .table-row-hover {
-            transition: all 0.2s ease-in-out;
-        }
-        .table-row-hover:hover {
-            background-color: #ffffff;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            z-index: 10;
-            position: relative;
-        }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
-
-    <script type="text/babel" data-presets="react,env">
-        /** @jsx React.createElement */
-        const { useState, useEffect, useMemo, useRef, useCallback } = React;
-
-        const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val || 0);
-        const formatNumber = (val) => new Intl.NumberFormat('en-IN', { maximumFractionDigits: 1 }).format(val || 0);
-        const formatPercent = (val) => `${formatNumber(val)}%`;
-        
-        const parseCSV = (csvText) => {
-            const lines = csvText.split(/\r?\n/).filter(l => l.trim() !== '');
-            if (lines.length < 2) return [];
-            const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+        <style>
+            body { 
+                background-color: #f8fafc; 
+                background-image: radial-gradient(at 0% 0%, hsla(210, 100%, 95%, 1) 0px, transparent 50%), 
+                                radial-gradient(at 100% 0%, hsla(250, 100%, 96%, 1) 0px, transparent 50%),
+                                linear-gradient(rgba(203, 213, 225, 0.35) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(203, 213, 225, 0.35) 1px, transparent 1px);
+                background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+                background-attachment: fixed;
+                color: #0f172a; 
+                overflow-x: hidden;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
             
-            return lines.slice(1).map(line => {
-                const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
-                const obj = {};
-                headers.forEach((header, i) => {
-                    let val = values[i] ? values[i].replace(/^"|"$/g, '').trim() : '';
-                    let cleanStr = val.replace(/[₹$,%]/g, '');
-                    if (!isNaN(cleanStr) && cleanStr !== '') val = Number(cleanStr);
-                    obj[header] = val;
-                });
-                return obj;
-            });
-        };
+            .tabular-nums { font-variant-numeric: tabular-nums; }
+            
+            /* Modern Scrollbar */
+            ::-webkit-scrollbar { width: 6px; height: 6px; }
+            ::-webkit-scrollbar-track { background: transparent; }
+            ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+            ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+            
+            @keyframes slideUpFade {
+                from { opacity: 0; transform: translateY(15px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-slide-up {
+                animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
 
-        const Icon = ({ name, size = 18, className = "" }) => {
-            const iconRef = useRef(null);
-            useEffect(() => {
-                if (window.lucide && iconRef.current && name) {
-                    const iconMap = { 'CheckCircle': 'CircleCheck', 'CheckCircle2': 'CircleCheck', 'AlertTriangle': 'TriangleAlert', 'RefreshCcw': 'RefreshCw', 'TrendingUp': 'TrendingUp', 'TrendingDown': 'TrendingDown' };
-                    const mappedName = iconMap[name] || name;
-                    if (window.lucide.icons[mappedName]) {
-                        iconRef.current.innerHTML = `<i data-lucide="${mappedName}"></i>`;
-                        window.lucide.createIcons({ icons: { [mappedName]: window.lucide.icons[mappedName] }, nameAttr: 'data-lucide', attrs: { class: className, width: size, height: size, 'stroke-width': 2.5 } });
+            /* Smooth Table Hover Transitions */
+            .table-row-hover {
+                transition: all 0.2s ease-in-out;
+            }
+            .table-row-hover:hover {
+                background-color: #ffffff;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+                z-index: 10;
+                position: relative;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root"></div>
+
+        <script type="text/babel" data-presets="react,env">
+            /** @jsx React.createElement */
+            const { useState, useEffect, useMemo, useRef, useCallback } = React;
+
+            const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val || 0);
+            const formatNumber = (val) => new Intl.NumberFormat('en-IN', { maximumFractionDigits: 1 }).format(val || 0);
+            const formatPercent = (val) => `${formatNumber(val)}%`;
+            
+            // Smart Profile Picture Resolver
+            const getProfilePic = (name, row) => {
+                if (!name) return null;
+                const n = name.toLowerCase();
+                
+                // Using Google Drive Thumbnail API which is significantly more reliable for embedding images
+                if (n.includes('karan')) return 'https://drive.google.com/thumbnail?id=1AOFBaNn_3QoZoF7Mgf1i82kUKOFRcfou&sz=w200';
+                if (n.includes('meghna')) return 'https://drive.google.com/thumbnail?id=1FjX8XrdFUNtqEmJYTW1yd03BZcS58Tuo&sz=w200';
+                
+                if (row) {
+                    let photoUrl = null;
+                    const keys = Object.keys(row);
+                    
+                    for (let k of keys) {
+                        if (k.toLowerCase().includes('photo') || k.toLowerCase().includes('image') || k.toLowerCase().includes('link')) {
+                            photoUrl = row[k]; break;
+                        }
+                    }
+                    if (!photoUrl) {
+                        for (let k of keys) {
+                            if (typeof row[k] === 'string' && row[k].trim().startsWith('http')) {
+                                photoUrl = row[k].trim(); break;
+                            }
+                        }
+                    }
+
+                    if (photoUrl && typeof photoUrl === 'string' && photoUrl.trim() !== '') {
+                        if (photoUrl.includes('drive.google.com/file/d/')) {
+                            const match = photoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                            if (match) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
+                        }
+                        return photoUrl;
                     }
                 }
-            }, [name, className, size]);
-            return <span ref={iconRef} className={`inline-flex items-center justify-center ${className}`}></span>;
-        };
-
-        const Card = ({ children, className = "", bodyClass = "p-6", title, action }) => (
-            <div className={`bg-white/80 backdrop-blur-xl rounded-2xl border border-white shadow-glass hover:shadow-float transition-all duration-300 flex flex-col h-full ${className}`}>
-                {(title || action) && (
-                    <div className="flex flex-wrap gap-4 justify-between items-center px-7 pt-6 pb-2 border-b border-slate-100/50">
-                        {title && <h3 className="text-sm font-bold text-slate-800 font-display tracking-wide">{title}</h3>}
-                        {action && <div>{action}</div>}
-                    </div>
-                )}
-                <div className={`flex-grow ${bodyClass}`}>
-                    {children}
-                </div>
-            </div>
-        );
-
-        const KPICard = ({ title, value, subtext, icon, format = 'number', theme = 'default' }) => {
-            const formattedValue = format === 'currency' ? formatCurrency(value) : format === 'percent' ? formatPercent(value) : formatNumber(value);
-            
-            const themes = {
-                default: {
-                    bg: "bg-white border-white",
-                    title: "text-slate-500",
-                    value: "text-transparent bg-clip-text bg-gradient-to-br from-slate-900 to-slate-600",
-                    iconBg: "bg-slate-100 text-slate-600",
-                    iconGlow: "",
-                    subtext: "bg-slate-50 text-slate-500 border-slate-100"
-                },
-                dark: {
-                    bg: "bg-card-dark border-slate-700",
-                    title: "text-slate-400",
-                    value: "text-white",
-                    iconBg: "bg-white/10 text-primary-400",
-                    iconGlow: "shadow-glow-primary",
-                    subtext: "bg-white/10 text-slate-300 border-white/10"
-                },
-                success: {
-                    bg: "bg-gradient-to-br from-emerald-500 to-emerald-700 border-emerald-600",
-                    title: "text-emerald-100",
-                    value: "text-white",
-                    iconBg: "bg-white/20 text-white",
-                    iconGlow: "shadow-[0_0_15px_rgba(255,255,255,0.3)]",
-                    subtext: "bg-black/10 text-emerald-50 border-black/10"
-                },
-                danger: {
-                    bg: "bg-gradient-to-br from-white to-red-50 border-red-100",
-                    title: "text-slate-500",
-                    value: "text-slate-800",
-                    iconBg: "bg-red-100 text-red-600",
-                    iconGlow: "shadow-[0_0_15px_rgba(220,38,38,0.15)]",
-                    subtext: "bg-red-50 text-red-600 border-red-200"
-                }
+                
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e2e8f0&color=475569&bold=true`;
             };
 
-            const t = themes[theme] || themes.default;
-
-            return (
-                <div className={`rounded-2xl p-7 border shadow-glass relative overflow-hidden group hover:-translate-y-1 hover:shadow-float transition-all duration-400 ${t.bg}`}>
-                    {/* Abstract element for dark and success themes to give a premium glow */}
-                    {(theme === 'dark' || theme === 'success') && (
-                        <div className="absolute -right-6 -top-6 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 pointer-events-none"></div>
-                    )}
-                    
-                    <div className="flex justify-between items-start mb-4 relative z-10">
-                        <p className={`text-[12px] font-bold uppercase tracking-widest font-display ${t.title}`}>{title}</p>
-                        <div className={`p-2.5 rounded-xl transition-transform duration-500 group-hover:scale-110 ${t.iconBg} ${t.iconGlow}`}>
-                            <Icon name={icon} size={20} />
-                        </div>
-                    </div>
-                    <div className="relative z-10">
-                        <h2 className={`text-4xl font-extrabold font-display tracking-tight tabular-nums pb-1 ${t.value}`}>
-                            {formattedValue}
-                        </h2>
-                    </div>
-                    {subtext && (
-                        <div className="mt-4 flex items-center relative z-10">
-                            <div className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${t.subtext}`}>
-                                {subtext}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        };
-
-        const HallOfFameCard = ({ theme = 'dark', title, name, subtitle, icon }) => {
-            const bgClass = theme === 'dark' ? 'bg-card-dark border-slate-700' : 'bg-card-primary border-primary-400';
-            const iconColor = theme === 'dark' ? 'text-emerald-400' : 'text-white';
-            const textClass = theme === 'dark' ? 'text-slate-300' : 'text-primary-100';
-            
-            return (
-                <div className={`rounded-2xl p-7 border relative overflow-hidden flex flex-col justify-between h-full group hover:shadow-2xl hover:-translate-y-1 transition-all duration-400 ${bgClass}`}>
-                    {/* Architectural Abstract Background Element */}
-                    <div className="absolute -right-6 -top-6 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
-                    <div className="absolute right-0 bottom-0 p-4 opacity-10 transform translate-x-4 translate-y-4 group-hover:-translate-x-2 group-hover:-translate-y-2 transition-transform duration-700">
-                        <Icon name={icon} size={140} className="text-white" />
-                    </div>
-
-                    <div className="relative z-10">
-                        <div className="flex items-center space-x-2 mb-8">
-                            <div className={`w-8 h-8 rounded-lg bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10 ${theme === 'dark' ? 'shadow-glow-emerald' : 'shadow-glow-primary'}`}>
-                                <Icon name="Star" size={16} className={iconColor} />
-                            </div>
-                            <span className={`text-[11px] font-bold uppercase tracking-widest font-display ${textClass}`}>{title}</span>
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-extrabold font-display text-white tracking-tight mb-1 truncate">{name || 'Calculating...'}</h3>
-                            <p className={`text-[13px] font-semibold ${textClass}`}>{subtitle}</p>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const ChartComponent = ({ type, data, options, height = "250px" }) => {
-            const canvasRef = useRef(null);
-            const chartInstance = useRef(null);
-
-            useEffect(() => {
-                if (canvasRef.current) {
-                    if (chartInstance.current) chartInstance.current.destroy();
-                    const ctx = canvasRef.current.getContext('2d');
-                    Chart.defaults.font.family = "'Inter', sans-serif";
-                    Chart.defaults.color = '#94a3b8';
-                    chartInstance.current = new Chart(ctx, { type, data, options });
-                }
-                return () => { if (chartInstance.current) chartInstance.current.destroy(); };
-            }, [data, options, type]);
-
-            return <div style={{ height, position: 'relative', width: '100%' }}><canvas ref={canvasRef}></canvas></div>;
-        };
-
-        const App = () => {
-            const [rawData, setRawData] = useState([]);
-            const [lastSynced, setLastSynced] = useState(new Date());
-            const [isRefreshing, setIsRefreshing] = useState(false);
-            const [filters, setFilters] = useState({ month: 'All', manager: 'All', search: '' });
-            
-            const sourceUrl = 'https://docs.google.com/spreadsheets/d/1faXYMBSYEOlUNxmEMS6-LufCwHiOxk_sVKVvqVv3Q_o/gviz/tq?tqx=out:csv&sheet=Dashboard';
-
-            const fetchData = useCallback(async (isManual = false) => {
-                if (isManual) setIsRefreshing(true);
-                try {
-                    const response = await fetch(sourceUrl);
-                    if (!response.ok) throw new Error("Network error");
-                    const text = await response.text();
-                    const parsed = parseCSV(text);
-                    if (parsed.length > 0 && parsed[0]['Employee Name']) {
-                        setRawData(parsed);
-                        setLastSynced(new Date());
-                    } else throw new Error("Invalid format");
-                } catch (error) {
-                    console.warn("Using fallback data", error);
-                    const fallbackCsv = "Employee Name,Manager Name,Target,Sales Achieved,Daily Run Rate,Expected Sales,Month\nSarah Connor,John Smith,1500000,1650000,55000,1700000,June\nKyle Reese,John Smith,1200000,950000,31000,1050000,June\nMarcus Wright,Jane Doe,1800000,1850000,61000,1900000,June\nDerek Reese,Jane Doe,1000000,400000,13000,500000,June";
-                    setRawData(parseCSV(fallbackCsv));
-                    setLastSynced(new Date());
-                } finally {
-                    if (isManual) setTimeout(() => setIsRefreshing(false), 600);
-                }
-            }, [sourceUrl]);
-
-            useEffect(() => {
-                fetchData(true);
-                const interval = setInterval(() => fetchData(), 15000);
-                return () => clearInterval(interval);
-            }, [fetchData]);
-
-            const availableMonths = useMemo(() => [...new Set(rawData.map(d => d.Month).filter(Boolean))].sort(), [rawData]);
-            const availableManagers = useMemo(() => [...new Set(rawData.map(d => d['Manager Name']).filter(Boolean))].sort(), [rawData]);
-
-            const filteredData = useMemo(() => {
-                const data = rawData.filter(row => {
-                    if (!row['Employee Name']) return false;
-                    const matchMonth = filters.month === 'All' || row.Month === filters.month;
-                    const matchManager = filters.manager === 'All' || row['Manager Name'] === filters.manager;
-                    const matchSearch = row['Employee Name']?.toLowerCase().includes(filters.search.toLowerCase()) || false;
-                    return matchMonth && matchManager && matchSearch;
-                });
-                return data.sort((a, b) => {
-                    const pctA = (Number(a['Sales Achieved']) || 0) / (Number(a.Target) || 1);
-                    const pctB = (Number(b['Sales Achieved']) || 0) / (Number(b.Target) || 1);
-                    return pctB - pctA;
-                });
-            }, [rawData, filters]);
-
-            const kpis = useMemo(() => {
-                if (!filteredData.length) return null;
-                let totalTarget = 0, totalAchieved = 0;
-                filteredData.forEach(row => { totalTarget += Number(row.Target) || 0; totalAchieved += Number(row['Sales Achieved']) || 0; });
+            const parseCSV = (csvText) => {
+                const lines = csvText.split(/\r?\n/).filter(l => l.trim() !== '');
+                if (lines.length < 2) return [];
+                const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
                 
-                const achievementPercent = totalTarget > 0 ? (totalAchieved / totalTarget) * 100 : 0;
-                const shortfall = Math.max(0, totalTarget - totalAchieved);
-                const shortfallPercent = totalTarget > 0 ? (shortfall / totalTarget) * 100 : 0;
-                
-                let topEmp = null, topEmpPct = -1;
-                filteredData.forEach(emp => {
-                    const pct = (Number(emp.Target) || 0) > 0 ? ((Number(emp['Sales Achieved']) || 0) / (Number(emp.Target) || 0)) * 100 : 0;
-                    if (pct > topEmpPct && (Number(emp.Target) || 0) > 0) { topEmpPct = pct; topEmp = emp; }
+                return lines.slice(1).map(line => {
+                    const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+                    const obj = {};
+                    headers.forEach((header, i) => {
+                        let val = values[i] ? values[i].replace(/^"|"$/g, '').trim() : '';
+                        let cleanStr = val.replace(/[₹$,%]/g, '');
+                        if (!isNaN(cleanStr) && cleanStr !== '') val = Number(cleanStr);
+                        obj[header] = val;
+                    });
+                    return obj;
                 });
+            };
 
-                const mgrStats = {};
-                filteredData.forEach(row => {
-                    const mgr = row['Manager Name'];
-                    if (!mgr) return;
-                    if (!mgrStats[mgr]) mgrStats[mgr] = { target: 0, achieved: 0 };
-                    mgrStats[mgr].target += Number(row.Target) || 0;
-                    mgrStats[mgr].achieved += Number(row['Sales Achieved']) || 0;
-                });
-
-                let topMgr = null, topMgrPct = -1;
-                Object.keys(mgrStats).forEach(mgr => {
-                    const pct = mgrStats[mgr].target > 0 ? (mgrStats[mgr].achieved / mgrStats[mgr].target) * 100 : 0;
-                    if (pct > topMgrPct && mgrStats[mgr].target > 0) { topMgrPct = pct; topMgr = mgr; }
-                });
-
-                return { totalTarget, totalAchieved, achievementPercent, shortfall, shortfallPercent, topBDE: topEmp ? { name: topEmp['Employee Name'], pct: topEmpPct } : null, topManager: topMgr ? { name: topMgr, pct: topMgrPct } : null };
-            }, [filteredData]);
-
-            const doughnutData = useMemo(() => {
-                if (!kpis) return {};
-                return {
-                    labels: ['Achieved', 'Shortfall'],
-                    datasets: [{
-                        data: [kpis.totalAchieved, kpis.shortfall],
-                        backgroundColor: ['#10b981', '#f1f5f9'], 
-                        hoverBackgroundColor: ['#059669', '#e2e8f0'],
-                        borderWidth: 0, cutout: '82%', borderRadius: 20, hoverOffset: 4
-                    }]
-                };
-            }, [kpis]);
-
-            const doughnutOptions = useMemo(() => ({
-                responsive: true, maintainAspectRatio: false, 
-                plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', padding: 12, cornerRadius: 8, bodyFont: {family: 'Inter'}, callbacks: { label: (ctx) => formatCurrency(ctx.raw) } } },
-                animation: { animateScale: true, animateRotate: true }
-            }), []);
-
-            const managerChartData = useMemo(() => {
-                const map = {};
-                filteredData.forEach(row => {
-                    const mgr = row['Manager Name'];
-                    if (!mgr) return;
-                    if (!map[mgr]) map[mgr] = { name: mgr, target: 0, achieved: 0 };
-                    map[mgr].target += Number(row.Target) || 0;
-                    map[mgr].achieved += Number(row['Sales Achieved']) || 0;
-                });
-                const stats = Object.values(map);
-                return {
-                    labels: stats.map(m => m.name.split(' ')[0]),
-                    datasets: [
-                        {
-                            label: 'Achieved', data: stats.map(m => m.achieved),
-                            backgroundColor: stats.map(m => m.achieved >= m.target ? '#10b981' : '#3b82f6'),
-                            borderRadius: 6, barPercentage: 0.5, categoryPercentage: 0.8, order: 1
-                        },
-                        {
-                            label: 'Target', data: stats.map(m => m.target),
-                            backgroundColor: '#f1f5f9', hoverBackgroundColor: '#e2e8f0',
-                            borderRadius: 6, barPercentage: 0.8, categoryPercentage: 0.8, order: 2
+            const Icon = ({ name, size = 18, className = "" }) => {
+                const iconRef = useRef(null);
+                useEffect(() => {
+                    if (window.lucide && iconRef.current && name) {
+                        const iconMap = { 'CheckCircle': 'CircleCheck', 'CheckCircle2': 'CircleCheck', 'AlertTriangle': 'TriangleAlert', 'RefreshCcw': 'RefreshCw', 'TrendingUp': 'TrendingUp', 'TrendingDown': 'TrendingDown' };
+                        const mappedName = iconMap[name] || name;
+                        if (window.lucide.icons[mappedName]) {
+                            iconRef.current.innerHTML = `<i data-lucide="${mappedName}"></i>`;
+                            window.lucide.createIcons({ icons: { [mappedName]: window.lucide.icons[mappedName] }, nameAttr: 'data-lucide', attrs: { class: className, width: size, height: size, 'stroke-width': 2.5 } });
                         }
-                    ]
-                };
-            }, [filteredData]);
+                    }
+                }, [name, className, size]);
+                return <span ref={iconRef} className={`inline-flex items-center justify-center ${className}`}></span>;
+            };
 
-            const barOptions = useMemo(() => ({
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', padding: 12, cornerRadius: 8, titleFont: { size: 13, family: 'Plus Jakarta Sans', weight: '700' }, bodyFont: { size: 12, family: 'Inter' }, callbacks: { label: (ctx) => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}` } } },
-                scales: {
-                    y: { beginAtZero: true, grid: { display: false, drawBorder: false }, border: { display: false }, ticks: { font: {size: 11, family: 'Inter', weight: '500'}, color: '#94a3b8', padding: 10, callback: v => '₹' + (v/100000).toFixed(0) + 'L' } },
-                    x: { grid: { display: false, drawBorder: false }, border: { display: false }, ticks: { font: {size: 12, family: 'Plus Jakarta Sans', weight: '600'}, color: '#475569', padding: 10 } }
-                },
-                interaction: { mode: 'index', intersect: false }
-            }), []);
+            const Card = ({ children, className = "", bodyClass = "p-6", title, action }) => (
+                <div className={`bg-white/80 backdrop-blur-xl rounded-2xl border border-white shadow-glass hover:shadow-float transition-all duration-300 flex flex-col h-full ${className}`}>
+                    {(title || action) && (
+                        <div className="flex flex-wrap gap-4 justify-between items-center px-7 pt-6 pb-2 border-b border-slate-100/50">
+                            {title && <h3 className="text-sm font-bold text-slate-800 font-display tracking-wide">{title}</h3>}
+                            {action && <div>{action}</div>}
+                        </div>
+                    )}
+                    <div className={`flex-grow ${bodyClass}`}>
+                        {children}
+                    </div>
+                </div>
+            );
 
-            /* NEW INFOGRAPHIC DATA MEMOS */
-            const teamHealth = useMemo(() => {
-                if (!filteredData.length) return null;
-                let met = 0, good = 0, avg = 0, risk = 0;
-                filteredData.forEach(row => {
-                    const target = Number(row.Target) || 0;
-                    const achieved = Number(row['Sales Achieved']) || 0;
-                    const pct = target > 0 ? (achieved / target) * 100 : 0;
-                    if (pct >= 100) met++;
-                    else if (pct >= 71) good++;
-                    else if (pct >= 31) avg++;
-                    else risk++;
-                });
-                return {
-                    counts: { met, good, avg, risk },
-                    total: filteredData.length,
-                    chartData: {
-                        labels: ['Target Met', 'Good', 'Average', 'At Risk'],
-                        datasets: [{
-                            data: [met, good, avg, risk],
-                            backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
-                            borderWidth: 0, hoverOffset: 4, cutout: '82%', borderRadius: 10
-                        }]
+            const KPICard = ({ title, value, subtext, icon, format = 'number', theme = 'default' }) => {
+                const formattedValue = format === 'currency' ? formatCurrency(value) : format === 'percent' ? formatPercent(value) : formatNumber(value);
+                
+                const themes = {
+                    default: {
+                        bg: "bg-white border-white",
+                        title: "text-slate-500",
+                        value: "text-transparent bg-clip-text bg-gradient-to-br from-slate-900 to-slate-600",
+                        iconBg: "bg-slate-100 text-slate-600",
+                        iconGlow: "",
+                        subtext: "bg-slate-50 text-slate-500 border-slate-100"
+                    },
+                    dark: {
+                        bg: "bg-card-dark border-slate-700",
+                        title: "text-slate-400",
+                        value: "text-white",
+                        iconBg: "bg-white/10 text-primary-400",
+                        iconGlow: "shadow-glow-primary",
+                        subtext: "bg-white/10 text-slate-300 border-white/10"
+                    },
+                    success: {
+                        bg: "bg-gradient-to-br from-emerald-500 to-emerald-700 border-emerald-600",
+                        title: "text-emerald-100",
+                        value: "text-white",
+                        iconBg: "bg-white/20 text-white",
+                        iconGlow: "shadow-[0_0_15px_rgba(255,255,255,0.3)]",
+                        subtext: "bg-black/10 text-emerald-50 border-black/10"
+                    },
+                    danger: {
+                        bg: "bg-gradient-to-br from-white to-red-50 border-red-100",
+                        title: "text-slate-500",
+                        value: "text-slate-800",
+                        iconBg: "bg-red-100 text-red-600",
+                        iconGlow: "shadow-[0_0_15px_rgba(220,38,38,0.15)]",
+                        subtext: "bg-red-50 text-red-600 border-red-200"
                     }
                 };
-            }, [filteredData]);
 
-            const topPerformers = useMemo(() => {
-                if (!filteredData.length) return [];
-                return [...filteredData]
-                    .map(d => ({ name: d['Employee Name'], revenue: Number(d['Sales Achieved']) || 0, target: Number(d.Target) || 0 }))
-                    .sort((a, b) => b.revenue - a.revenue)
-                    .slice(0, 5);
-            }, [filteredData]);
+                const t = themes[theme] || themes.default;
 
-            const maxTopPerformerRevenue = useMemo(() => {
-                return topPerformers.length ? Math.max(...topPerformers.map(p => p.revenue)) : 1;
-            }, [topPerformers]);
+                return (
+                    <div className={`rounded-2xl p-7 border shadow-glass relative overflow-hidden group hover:-translate-y-1 hover:shadow-float transition-all duration-400 ${t.bg}`}>
+                        {/* Infographic Sparkline Decoration */}
+                        <svg className={`absolute bottom-0 left-0 w-full h-24 ${theme === 'default' ? 'opacity-[0.03]' : 'opacity-20'} pointer-events-none transform translate-y-4 group-hover:translate-y-0 transition-transform duration-700`} viewBox="0 0 100 40" preserveAspectRatio="none">
+                            <path d="M0,40 L0,30 L20,20 L40,25 L60,10 L80,15 L100,5 L100,40 Z" fill="currentColor" />
+                            <path d="M0,30 L20,20 L40,25 L60,10 L80,15 L100,5" fill="none" stroke="currentColor" strokeWidth="2" />
+                        </svg>
 
-            const teamHealthOptions = useMemo(() => ({
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', padding: 12, cornerRadius: 8, bodyFont: {family: 'Inter'} } },
-                animation: { animateScale: true, animateRotate: true }
-            }), []);
-
-            if (!kpis) return (
-                <div className="flex h-screen items-center justify-center bg-slate-50 flex-col">
-                    <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mb-4"></div>
-                    <p className="text-sm text-slate-500 font-bold font-display uppercase tracking-widest">Syncing Ledger</p>
-                </div>
-            );
-
-            return (
-                <div className="min-h-screen pb-20 font-sans text-slate-800">
-                    
-                    {/* Floating Nav Bar (Ultra-Modern Trend) */}
-                    <div className="pt-6 px-6 max-w-[1600px] mx-auto z-50 relative animate-slide-up">
-                        <div className="bg-white/80 backdrop-blur-2xl border border-white/60 shadow-glass rounded-2xl px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                            
-                            <div className="flex items-center space-x-4">
-                                {/* Text-based Logo for OnePaper */}
-                                <div className="flex items-center justify-center px-3 py-1.5 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-md border border-slate-700/50 hover:scale-105 transition-transform duration-300">
-                                    <span className="text-xl font-black font-display tracking-tighter text-white">
-                                        One<span className="text-primary-400">Paper</span>
-                                    </span>
-                                </div>
-                                <div className="hidden sm:block h-8 w-px bg-slate-200"></div>
-                                <div>
-                                    <h1 className="text-xl font-extrabold font-display tracking-tight text-slate-900">Sales Dashboard</h1>
-                                    <div className="flex items-center space-x-2 mt-0.5">
-                                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-glow-emerald"></div>
-                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Live Feed Active</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center space-x-3 bg-slate-50/50 p-1.5 rounded-xl border border-slate-100">
-                                <button onClick={() => setFilters({...filters, month: 'All'})} className={`px-4 py-2 text-[12px] font-bold uppercase tracking-wider rounded-lg transition-all ${filters.month === 'All' ? 'bg-white shadow-sm text-primary-600 border border-slate-200/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/50'}`}>
-                                    All Time
-                                </button>
-                                {availableMonths.map(m => (
-                                    <button key={m} onClick={() => setFilters({...filters, month: m})} className={`px-4 py-2 text-[12px] font-bold uppercase tracking-wider rounded-lg transition-all ${filters.month === m ? 'bg-white shadow-sm text-primary-600 border border-slate-200/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/50'}`}>
-                                        {m}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Main Content Dashboard */}
-                    <div className="max-w-[1600px] mx-auto px-6 mt-8 space-y-8">
+                        {/* Abstract element for dark and success themes to give a premium glow */}
+                        {(theme === 'dark' || theme === 'success') && (
+                            <div className="absolute -right-6 -top-6 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 pointer-events-none"></div>
+                        )}
                         
-                        {/* ROW 1: Financial KPIs & Hall of Fame Grid */}
-                        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 animate-slide-up" style={{ animationDelay: '100ms' }}>
-                            <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <KPICard title="Total Target" value={kpis.totalTarget} format="currency" icon="Target" theme="dark" />
-                                <KPICard title="Revenue Achieved" value={kpis.totalAchieved} format="currency" icon="CheckCircle" theme="success" subtext={`${formatPercent(kpis.achievementPercent)} Achieved`} />
-                                <KPICard title="Shortfall Gap" value={kpis.shortfall} format="currency" icon="AlertTriangle" theme={kpis.shortfall > 0 ? "danger" : "default"} subtext={`${formatPercent(kpis.shortfallPercent)} Remaining`} />
-                            </div>
-                            
-                            <div className="xl:col-span-4 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <HallOfFameCard theme="dark" title="Top Manager" name={kpis.topManager?.name} subtitle={`${formatPercent(kpis.topManager?.pct)} Target Hit`} icon="Award" />
-                                <HallOfFameCard theme="primary" title="Top BDE Performer" name={kpis.topBDE?.name} subtitle={`${formatPercent(kpis.topBDE?.pct)} Target Hit`} icon="TrendingUp" />
+                        <div className="flex justify-between items-start mb-4 relative z-10">
+                            <p className={`text-[12px] font-bold uppercase tracking-widest font-display ${t.title}`}>{title}</p>
+                            <div className={`p-2.5 rounded-xl transition-transform duration-500 group-hover:scale-110 ${t.iconBg} ${t.iconGlow}`}>
+                                <Icon name={icon} size={20} />
                             </div>
                         </div>
+                        <div className="relative z-10">
+                            <h2 className={`text-4xl font-extrabold font-display tracking-tight tabular-nums pb-1 ${t.value}`}>
+                                {formattedValue}
+                            </h2>
+                        </div>
+                        {subtext && (
+                            <div className="mt-4 flex items-center relative z-10">
+                                <div className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${t.subtext}`}>
+                                    {subtext}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
 
-                        {/* ROW 2: Analytical Charts */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-slide-up" style={{ animationDelay: '200ms' }}>
-                            <Card title="Target Achievement" className="lg:col-span-1" bodyClass="p-6 pt-2">
-                                <div className="relative h-[240px] flex items-center justify-center group">
-                                    <ChartComponent type="doughnut" data={doughnutData} options={doughnutOptions} height="100%" />
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none transform transition-transform duration-500 group-hover:scale-110">
-                                        <span className="text-4xl font-black font-display tracking-tight text-slate-800">{formatPercent(kpis.achievementPercent)}</span>
-                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Realized</span>
-                                    </div>
-                                </div>
-                                <div className="flex justify-center space-x-8 mt-6 pt-6 border-t border-slate-100/60">
-                                    <div className="text-center">
-                                        <div className="flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-glow-emerald"></div>Achieved</div>
-                                        <div className="text-[14px] font-extrabold text-slate-800 tabular-nums">{formatCurrency(kpis.totalAchieved)}</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5"><div className="w-2 h-2 rounded-full bg-slate-200 mr-2"></div>Shortfall</div>
-                                        <div className="text-[14px] font-extrabold text-slate-800 tabular-nums">{formatCurrency(kpis.shortfall)}</div>
-                                    </div>
-                                </div>
-                            </Card>
-
-                            <Card title="Manager Performance" className="lg:col-span-2" bodyClass="p-6 pt-2"
-                                action={
-                                    <div className="flex space-x-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                                        <div className="flex items-center"><span className="w-2.5 h-2.5 rounded-sm bg-primary-500 mr-2"></span>Achieved</div>
-                                        <div className="flex items-center"><span className="w-2.5 h-2.5 rounded-sm bg-slate-200 mr-2"></span>Target</div>
-                                    </div>
-                                }>
-                                <div className="mt-4">
-                                    <ChartComponent type="bar" data={managerChartData} options={barOptions} height="280px" />
-                                </div>
-                            </Card>
+            const HallOfFameCard = ({ theme = 'dark', title, name, subtitle, icon, photo }) => {
+                const bgClass = theme === 'dark' ? 'bg-card-dark border-slate-700' : 'bg-card-primary border-primary-400';
+                const iconColor = theme === 'dark' ? 'text-emerald-400' : 'text-white';
+                const textClass = theme === 'dark' ? 'text-slate-300' : 'text-primary-100';
+                
+                return (
+                    <div className={`rounded-2xl p-7 border relative overflow-hidden flex flex-col justify-between h-full group hover:shadow-2xl hover:-translate-y-1 transition-all duration-400 ${bgClass}`}>
+                        {/* Infographic Giant Watermark */}
+                        <div className="absolute -right-4 -bottom-8 text-[140px] font-black opacity-[0.04] leading-none pointer-events-none text-white select-none transition-transform duration-700 group-hover:scale-110">#1</div>
+                        
+                        {/* Architectural Abstract Background Element */}
+                        <div className="absolute -right-6 -top-6 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                        <div className="absolute right-0 bottom-0 p-4 opacity-10 transform translate-x-4 translate-y-4 group-hover:-translate-x-2 group-hover:-translate-y-2 transition-transform duration-700">
+                            <Icon name={icon} size={140} className="text-white" />
                         </div>
 
-                        {/* ROW 2.5: NEW INFOGRAPHICS */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-slide-up" style={{ animationDelay: '250ms' }}>
-                            {/* Team Health Doughnut */}
-                            <Card title="Team Performance Overview" className="lg:col-span-1" bodyClass="p-6 pt-2">
-                                <div className="relative h-[200px] flex items-center justify-center group mt-2">
-                                    {teamHealth && <ChartComponent type="doughnut" data={teamHealth.chartData} options={teamHealthOptions} height="100%" />}
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none transform transition-transform duration-500 group-hover:scale-110">
-                                        <span className="text-3xl font-black font-display tracking-tight text-slate-800">{teamHealth?.total || 0}</span>
-                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Total BDEs</span>
-                                    </div>
+                        <div className="relative z-10">
+                            <div className="flex items-center space-x-2 mb-8">
+                                <div className={`w-8 h-8 rounded-lg bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10 ${theme === 'dark' ? 'shadow-glow-emerald' : 'shadow-glow-primary'}`}>
+                                    <Icon name="Star" size={16} className={iconColor} />
                                 </div>
-                                <div className="grid grid-cols-2 gap-y-3 gap-x-4 mt-6 pt-5 border-t border-slate-100/60">
-                                    <div className="flex items-center"><div className="w-2 h-2 rounded-full bg-emerald-500 mr-2.5 shadow-glow-emerald"></div><span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex-1">Target Met</span><span className="text-[12px] font-black text-slate-800">{teamHealth?.counts.met || 0}</span></div>
-                                    <div className="flex items-center"><div className="w-2 h-2 rounded-full bg-primary-500 mr-2.5 shadow-glow-primary"></div><span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex-1">Good</span><span className="text-[12px] font-black text-slate-800">{teamHealth?.counts.good || 0}</span></div>
-                                    <div className="flex items-center"><div className="w-2 h-2 rounded-full bg-amber-500 mr-2.5"></div><span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex-1">Average</span><span className="text-[12px] font-black text-slate-800">{teamHealth?.counts.avg || 0}</span></div>
-                                    <div className="flex items-center"><div className="w-2 h-2 rounded-full bg-red-500 mr-2.5"></div><span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex-1">At Risk</span><span className="text-[12px] font-black text-slate-800">{teamHealth?.counts.risk || 0}</span></div>
-                                </div>
-                            </Card>
-
-                            {/* Top 5 Leaderboard */}
-                            <Card title="Top Sales Contributors" className="lg:col-span-2" bodyClass="p-6 pt-2">
-                                <div className="flex flex-col justify-center h-full space-y-6 mt-1">
-                                    {topPerformers.map((emp, i) => (
-                                        <div key={i} className="relative group">
-                                            <div className="flex justify-between items-end mb-2">
-                                                <div className="flex items-center">
-                                                    <span className="text-[12px] font-black text-slate-300 w-5 mr-1 group-hover:text-primary-400 transition-colors">{i+1}.</span>
-                                                    <span className="text-[13px] font-bold text-slate-800 font-display">{emp.name}</span>
-                                                </div>
-                                                <div className="text-right">
-                                                    <span className="text-[13px] font-black text-slate-800 tabular-nums">{formatCurrency(emp.revenue)}</span>
-                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2 hidden sm:inline-block">/ {formatCurrency(emp.target)}</span>
-                                                </div>
-                                            </div>
-                                            <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                                                <div className="h-full bg-gradient-to-r from-primary-600 to-primary-400 rounded-full group-hover:from-emerald-500 group-hover:to-emerald-400 transition-colors duration-500" style={{ width: `${(emp.revenue / maxTopPerformerRevenue) * 100}%` }}></div>
+                                <span className={`text-[11px] font-bold uppercase tracking-widest font-display ${textClass}`}>{title}</span>
+                            </div>
+                            <div>
+                                {photo ? (
+                                    <div className="flex items-center space-x-5">
+                                        <div className="relative">
+                                            <div className={`absolute inset-0 rounded-full blur-md ${theme === 'dark' ? 'bg-emerald-400' : 'bg-white'} opacity-50 group-hover:opacity-100 transition-opacity duration-500`}></div>
+                                            <img 
+                                                src={photo} 
+                                                alt={name} 
+                                                className={`relative w-20 h-20 rounded-full object-cover border-[3px] ${theme === 'dark' ? 'border-slate-800' : 'border-primary-600'} shadow-xl shrink-0 z-10`} 
+                                                onError={(e) => { 
+                                                    e.target.onerror = null; 
+                                                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'A')}&background=e2e8f0&color=475569&bold=true`; 
+                                                }} 
+                                            />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <h3 className="text-3xl font-extrabold font-display text-white tracking-tight truncate mb-1">{name || 'Calculating...'}</h3>
+                                            <div className={`inline-flex items-center px-2.5 py-1 rounded-md text-[12px] font-black uppercase tracking-widest bg-white/10 border border-white/10 ${textClass}`}>
+                                                {subtitle}
                                             </div>
                                         </div>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <h3 className="text-3xl font-extrabold font-display text-white tracking-tight mb-2 truncate">{name || 'Calculating...'}</h3>
+                                        <div className={`inline-flex items-center px-2.5 py-1 rounded-md text-[12px] font-black uppercase tracking-widest bg-white/10 border border-white/10 ${textClass}`}>
+                                            {subtitle}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const ChartComponent = ({ type, data, options, height = "250px" }) => {
+                const canvasRef = useRef(null);
+                const chartInstance = useRef(null);
+
+                useEffect(() => {
+                    if (canvasRef.current) {
+                        if (chartInstance.current) chartInstance.current.destroy();
+                        const ctx = canvasRef.current.getContext('2d');
+                        Chart.defaults.font.family = "'Inter', sans-serif";
+                        Chart.defaults.color = '#94a3b8';
+                        chartInstance.current = new Chart(ctx, { type, data, options });
+                    }
+                    return () => { if (chartInstance.current) chartInstance.current.destroy(); };
+                }, [data, options, type]);
+
+                return <div style={{ height, position: 'relative', width: '100%' }}><canvas ref={canvasRef}></canvas></div>;
+            };
+
+            const App = () => {
+                const [rawData, setRawData] = useState([]);
+                const [lastSynced, setLastSynced] = useState(new Date());
+                const [isRefreshing, setIsRefreshing] = useState(false);
+                const [filters, setFilters] = useState({ month: 'All', manager: 'All', search: '' });
+                
+                const sourceUrl = 'https://docs.google.com/spreadsheets/d/1faXYMBSYEOlUNxmEMS6-LufCwHiOxk_sVKVvqVv3Q_o/gviz/tq?tqx=out:csv&sheet=Dashboard';
+
+                const fetchData = useCallback(async (isManual = false) => {
+                    if (isManual) setIsRefreshing(true);
+                    try {
+                        const response = await fetch(sourceUrl);
+                        if (!response.ok) throw new Error("Network error");
+                        const text = await response.text();
+                        const parsed = parseCSV(text);
+                        if (parsed.length > 0 && parsed[0]['Employee Name']) {
+                            setRawData(parsed);
+                            setLastSynced(new Date());
+                        } else throw new Error("Invalid format");
+                    } catch (error) {
+                        console.warn("Using fallback data", error);
+                        const fallbackCsv = "Employee Name,Manager Name,Target,Sales Achieved,Daily Run Rate,Expected Sales,Month\nSarah Connor,John Smith,1500000,1650000,55000,1700000,June\nKyle Reese,John Smith,1200000,950000,31000,1050000,June\nMarcus Wright,Jane Doe,1800000,1850000,61000,1900000,June\nDerek Reese,Jane Doe,1000000,400000,13000,500000,June";
+                        setRawData(parseCSV(fallbackCsv));
+                        setLastSynced(new Date());
+                    } finally {
+                        if (isManual) setTimeout(() => setIsRefreshing(false), 600);
+                    }
+                }, [sourceUrl]);
+
+                useEffect(() => {
+                    fetchData(true);
+                    const interval = setInterval(() => fetchData(), 15000);
+                    return () => clearInterval(interval);
+                }, [fetchData]);
+
+                const availableMonths = useMemo(() => [...new Set(rawData.map(d => d.Month).filter(Boolean))].sort(), [rawData]);
+                const availableManagers = useMemo(() => [...new Set(rawData.map(d => d['Manager Name']).filter(Boolean))].sort(), [rawData]);
+
+                const filteredData = useMemo(() => {
+                    const data = rawData.filter(row => {
+                        if (!row['Employee Name']) return false;
+                        const matchMonth = filters.month === 'All' || row.Month === filters.month;
+                        const matchManager = filters.manager === 'All' || row['Manager Name'] === filters.manager;
+                        const matchSearch = row['Employee Name']?.toLowerCase().includes(filters.search.toLowerCase()) || false;
+                        return matchMonth && matchManager && matchSearch;
+                    });
+                    return data.sort((a, b) => {
+                        const pctA = (Number(a['Sales Achieved']) || 0) / (Number(a.Target) || 1);
+                        const pctB = (Number(b['Sales Achieved']) || 0) / (Number(b.Target) || 1);
+                        return pctB - pctA;
+                    });
+                }, [rawData, filters]);
+
+                const kpis = useMemo(() => {
+                    if (!filteredData.length) return null;
+                    let totalTarget = 0, totalAchieved = 0;
+                    filteredData.forEach(row => { totalTarget += Number(row.Target) || 0; totalAchieved += Number(row['Sales Achieved']) || 0; });
+                    
+                    const achievementPercent = totalTarget > 0 ? (totalAchieved / totalTarget) * 100 : 0;
+                    const shortfall = Math.max(0, totalTarget - totalAchieved);
+                    const shortfallPercent = totalTarget > 0 ? (shortfall / totalTarget) * 100 : 0;
+                    
+                    let topEmp = null, topEmpPct = -1;
+                    filteredData.forEach(emp => {
+                        const pct = (Number(emp.Target) || 0) > 0 ? ((Number(emp['Sales Achieved']) || 0) / (Number(emp.Target) || 0)) * 100 : 0;
+                        if (pct > topEmpPct && (Number(emp.Target) || 0) > 0) { topEmpPct = pct; topEmp = emp; }
+                    });
+
+                    const mgrStats = {};
+                    filteredData.forEach(row => {
+                        const mgr = row['Manager Name'];
+                        if (!mgr) return;
+                        if (!mgrStats[mgr]) mgrStats[mgr] = { target: 0, achieved: 0 };
+                        mgrStats[mgr].target += Number(row.Target) || 0;
+                        mgrStats[mgr].achieved += Number(row['Sales Achieved']) || 0;
+                    });
+
+                    let topMgr = null, topMgrPct = -1;
+                    Object.keys(mgrStats).forEach(mgr => {
+                        const pct = mgrStats[mgr].target > 0 ? (mgrStats[mgr].achieved / mgrStats[mgr].target) * 100 : 0;
+                        if (pct > topMgrPct && mgrStats[mgr].target > 0) { topMgrPct = pct; topMgr = mgr; }
+                    });
+
+                    return { 
+                        totalTarget, 
+                        totalAchieved, 
+                        achievementPercent, 
+                        shortfall, 
+                        shortfallPercent, 
+                        topBDE: topEmp ? { name: topEmp['Employee Name'], pct: topEmpPct, photo: getProfilePic(topEmp['Employee Name'], topEmp) } : null, 
+                        topManager: topMgr ? { name: topMgr, pct: topMgrPct, photo: getProfilePic(topMgr, null) } : null 
+                    };
+                }, [filteredData]);
+
+                const doughnutData = useMemo(() => {
+                    if (!kpis) return {};
+                    return {
+                        labels: ['Achieved', 'Shortfall'],
+                        datasets: [{
+                            data: [kpis.totalAchieved, kpis.shortfall],
+                            backgroundColor: ['#10b981', '#f1f5f9'], 
+                            hoverBackgroundColor: ['#059669', '#e2e8f0'],
+                            borderWidth: 0, cutout: '82%', borderRadius: 20, hoverOffset: 4
+                        }]
+                    };
+                }, [kpis]);
+
+                const doughnutOptions = useMemo(() => ({
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', padding: 12, cornerRadius: 8, bodyFont: {family: 'Inter'}, callbacks: { label: (ctx) => formatCurrency(ctx.raw) } } },
+                    animation: { animateScale: true, animateRotate: true }
+                }), []);
+
+                const managerChartData = useMemo(() => {
+                    const map = {};
+                    filteredData.forEach(row => {
+                        const mgr = row['Manager Name'];
+                        if (!mgr) return;
+                        if (!map[mgr]) map[mgr] = { name: mgr, target: 0, achieved: 0 };
+                        map[mgr].target += Number(row.Target) || 0;
+                        map[mgr].achieved += Number(row['Sales Achieved']) || 0;
+                    });
+                    const stats = Object.values(map);
+                    return {
+                        labels: stats.map(m => m.name.split(' ')[0]),
+                        datasets: [
+                            {
+                                label: 'Achieved', data: stats.map(m => m.achieved),
+                                backgroundColor: stats.map(m => m.achieved >= m.target ? '#10b981' : '#3b82f6'),
+                                borderRadius: 6, barPercentage: 0.5, categoryPercentage: 0.8, order: 1
+                            },
+                            {
+                                label: 'Target', data: stats.map(m => m.target),
+                                backgroundColor: '#f1f5f9', hoverBackgroundColor: '#e2e8f0',
+                                borderRadius: 6, barPercentage: 0.8, categoryPercentage: 0.8, order: 2
+                            }
+                        ]
+                    };
+                }, [filteredData]);
+
+                const barOptions = useMemo(() => ({
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', padding: 12, cornerRadius: 8, titleFont: { size: 13, family: 'Plus Jakarta Sans', weight: '700' }, bodyFont: { size: 12, family: 'Inter' }, callbacks: { label: (ctx) => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}` } } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false, drawBorder: false }, border: { display: false }, ticks: { font: {size: 11, family: 'Inter', weight: '500'}, color: '#94a3b8', padding: 10, callback: v => '₹' + (v/100000).toFixed(0) + 'L' } },
+                        x: { grid: { display: false, drawBorder: false }, border: { display: false }, ticks: { font: {size: 12, family: 'Plus Jakarta Sans', weight: '600'}, color: '#475569', padding: 10 } }
+                    },
+                    interaction: { mode: 'index', intersect: false }
+                }), []);
+
+                /* NEW INFOGRAPHIC DATA MEMOS */
+                const teamHealth = useMemo(() => {
+                    if (!filteredData.length) return null;
+                    let met = 0, good = 0, avg = 0, risk = 0;
+                    filteredData.forEach(row => {
+                        const target = Number(row.Target) || 0;
+                        const achieved = Number(row['Sales Achieved']) || 0;
+                        const pct = target > 0 ? (achieved / target) * 100 : 0;
+                        if (pct >= 100) met++;
+                        else if (pct >= 71) good++;
+                        else if (pct >= 31) avg++;
+                        else risk++;
+                    });
+                    return {
+                        counts: { met, good, avg, risk },
+                        total: filteredData.length,
+                        chartData: {
+                            labels: ['Target Met', 'Good', 'Average', 'At Risk'],
+                            datasets: [{
+                                data: [met, good, avg, risk],
+                                backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
+                                borderWidth: 0, hoverOffset: 4, cutout: '82%', borderRadius: 10
+                            }]
+                        }
+                    };
+                }, [filteredData]);
+
+                const topPerformers = useMemo(() => {
+                    if (!filteredData.length) return [];
+                    return [...filteredData]
+                        .map(d => ({ name: d['Employee Name'], revenue: Number(d['Sales Achieved']) || 0, target: Number(d.Target) || 0, photo: getProfilePic(d['Employee Name'], d) }))
+                        .sort((a, b) => b.revenue - a.revenue)
+                        .slice(0, 5);
+                }, [filteredData]);
+
+                const maxTopPerformerRevenue = useMemo(() => {
+                    return topPerformers.length ? Math.max(...topPerformers.map(p => p.revenue)) : 1;
+                }, [topPerformers]);
+
+                const teamHealthOptions = useMemo(() => ({
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', padding: 12, cornerRadius: 8, bodyFont: {family: 'Inter'} } },
+                    animation: { animateScale: true, animateRotate: true }
+                }), []);
+
+                if (!kpis) return (
+                    <div className="flex h-screen items-center justify-center bg-slate-50 flex-col">
+                        <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mb-4"></div>
+                        <p className="text-sm text-slate-500 font-bold font-display uppercase tracking-widest">Syncing Ledger</p>
+                    </div>
+                );
+
+                return (
+                    <div className="min-h-screen pb-20 font-sans text-slate-800">
+                        
+                        {/* Floating Nav Bar (Ultra-Modern Trend) */}
+                        <div className="pt-6 px-6 max-w-[1600px] mx-auto z-50 relative animate-slide-up">
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/60 shadow-glass rounded-2xl px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                                
+                                <div className="flex items-center space-x-4">
+                                    {/* Text-based Logo for OnePaper */}
+                                    <div className="flex items-center justify-center px-3 py-1.5 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-md border border-slate-700/50 hover:scale-105 transition-transform duration-300">
+                                        <span className="text-xl font-black font-display tracking-tighter text-white">
+                                            One<span className="text-primary-400">Paper</span>
+                                        </span>
+                                    </div>
+                                    <div className="hidden sm:block h-8 w-px bg-slate-200"></div>
+                                    <div>
+                                        <h1 className="text-xl font-extrabold font-display tracking-tight text-slate-900">Sales Dashboard</h1>
+                                        <div className="flex items-center space-x-2 mt-0.5">
+                                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-glow-emerald"></div>
+                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Live Feed Active</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center space-x-3 bg-slate-50/50 p-1.5 rounded-xl border border-slate-100">
+                                    <button onClick={() => setFilters({...filters, month: 'All'})} className={`px-4 py-2 text-[12px] font-bold uppercase tracking-wider rounded-lg transition-all ${filters.month === 'All' ? 'bg-white shadow-sm text-primary-600 border border-slate-200/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/50'}`}>
+                                        All Time
+                                    </button>
+                                    {availableMonths.map(m => (
+                                        <button key={m} onClick={() => setFilters({...filters, month: m})} className={`px-4 py-2 text-[12px] font-bold uppercase tracking-wider rounded-lg transition-all ${filters.month === m ? 'bg-white shadow-sm text-primary-600 border border-slate-200/50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/50'}`}>
+                                            {m}
+                                        </button>
                                     ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Main Content Dashboard */}
+                        <div className="max-w-[1600px] mx-auto px-6 mt-8 space-y-8">
+                            
+                            {/* ROW 1: Financial KPIs & Hall of Fame Grid */}
+                            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 animate-slide-up" style={{ animationDelay: '100ms' }}>
+                                <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <KPICard title="Total Target" value={kpis.totalTarget} format="currency" icon="Target" theme="dark" />
+                                    <KPICard title="Revenue Achieved" value={kpis.totalAchieved} format="currency" icon="CheckCircle" theme="success" subtext={`${formatPercent(kpis.achievementPercent)} Achieved`} />
+                                    <KPICard title="Shortfall Gap" value={kpis.shortfall} format="currency" icon="AlertTriangle" theme={kpis.shortfall > 0 ? "danger" : "default"} subtext={`${formatPercent(kpis.shortfallPercent)} Remaining`} />
+                                </div>
+                                
+                                <div className="xl:col-span-4 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <HallOfFameCard theme="dark" title="Top Manager" name={kpis.topManager?.name} subtitle={`${formatPercent(kpis.topManager?.pct)} Target Hit`} icon="Award" photo={kpis.topManager?.photo} />
+                                    <HallOfFameCard theme="primary" title="Top BDE Performer" name={kpis.topBDE?.name} subtitle={`${formatPercent(kpis.topBDE?.pct)} Target Hit`} icon="TrendingUp" photo={kpis.topBDE?.photo} />
+                                </div>
+                            </div>
+
+                            {/* ROW 2: Analytical Charts */}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-slide-up" style={{ animationDelay: '200ms' }}>
+                                <Card title="Target Achievement" className="lg:col-span-1" bodyClass="p-6 pt-2">
+                                    <div className="relative h-[240px] flex items-center justify-center group">
+                                        <ChartComponent type="doughnut" data={doughnutData} options={doughnutOptions} height="100%" />
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none transform transition-transform duration-500 group-hover:scale-110">
+                                            <span className="text-4xl font-black font-display tracking-tight text-slate-800">{formatPercent(kpis.achievementPercent)}</span>
+                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Realized</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-center space-x-8 mt-6 pt-6 border-t border-slate-100/60">
+                                        <div className="text-center">
+                                            <div className="flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-glow-emerald"></div>Achieved</div>
+                                            <div className="text-[14px] font-extrabold text-slate-800 tabular-nums">{formatCurrency(kpis.totalAchieved)}</div>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5"><div className="w-2 h-2 rounded-full bg-slate-200 mr-2"></div>Shortfall</div>
+                                            <div className="text-[14px] font-extrabold text-slate-800 tabular-nums">{formatCurrency(kpis.shortfall)}</div>
+                                        </div>
+                                    </div>
+                                </Card>
+
+                                <Card title="Manager Performance" className="lg:col-span-2" bodyClass="p-6 pt-2"
+                                    action={
+                                        <div className="flex space-x-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                                            <div className="flex items-center"><span className="w-2.5 h-2.5 rounded-sm bg-primary-500 mr-2"></span>Achieved</div>
+                                            <div className="flex items-center"><span className="w-2.5 h-2.5 rounded-sm bg-slate-200 mr-2"></span>Target</div>
+                                        </div>
+                                    }>
+                                    <div className="mt-4">
+                                        <ChartComponent type="bar" data={managerChartData} options={barOptions} height="280px" />
+                                    </div>
+                                </Card>
+                            </div>
+
+                            {/* ROW 2.5: NEW INFOGRAPHICS */}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-slide-up" style={{ animationDelay: '250ms' }}>
+                                {/* Team Health Doughnut */}
+                                <Card title="Team Performance Overview" className="lg:col-span-1" bodyClass="p-6 pt-2">
+                                    <div className="relative h-[200px] flex items-center justify-center group mt-2">
+                                        {teamHealth && <ChartComponent type="doughnut" data={teamHealth.chartData} options={teamHealthOptions} height="100%" />}
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none transform transition-transform duration-500 group-hover:scale-110">
+                                            <span className="text-4xl font-black font-display tracking-tight text-slate-800 drop-shadow-sm">{teamHealth?.total || 0}</span>
+                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 bg-white/80 px-2 py-0.5 rounded-md backdrop-blur-sm border border-slate-100">Total BDEs</span>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-y-3 gap-x-4 mt-6 pt-5 border-t border-slate-100/60">
+                                        <div className="flex items-center"><div className="w-2 h-2 rounded-full bg-emerald-500 mr-2.5 shadow-glow-emerald"></div><span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex-1">Target Met</span><span className="text-[12px] font-black text-slate-800">{teamHealth?.counts.met || 0}</span></div>
+                                        <div className="flex items-center"><div className="w-2 h-2 rounded-full bg-primary-500 mr-2.5 shadow-glow-primary"></div><span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex-1">Good</span><span className="text-[12px] font-black text-slate-800">{teamHealth?.counts.good || 0}</span></div>
+                                        <div className="flex items-center"><div className="w-2 h-2 rounded-full bg-amber-500 mr-2.5"></div><span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex-1">Average</span><span className="text-[12px] font-black text-slate-800">{teamHealth?.counts.avg || 0}</span></div>
+                                        <div className="flex items-center"><div className="w-2 h-2 rounded-full bg-red-500 mr-2.5"></div><span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex-1">At Risk</span><span className="text-[12px] font-black text-slate-800">{teamHealth?.counts.risk || 0}</span></div>
+                                    </div>
+                                </Card>
+
+                                {/* Top 5 Leaderboard */}
+                                <Card title="Top Sales Contributors" className="lg:col-span-2" bodyClass="p-6 pt-2">
+                                    <div className="flex flex-col justify-center h-full space-y-6 mt-1">
+                                        {topPerformers.map((emp, i) => {
+                                            const rankColors = ['text-amber-400', 'text-slate-400', 'text-amber-700', 'text-slate-300', 'text-slate-300'];
+                                            const rankBg = ['bg-gradient-to-r from-amber-50 to-transparent border-amber-200/50', 'bg-gradient-to-r from-slate-50 to-transparent border-slate-200/50', 'bg-gradient-to-r from-orange-50 to-transparent border-orange-200/50', 'bg-transparent border-transparent', 'bg-transparent border-transparent'];
+                                            
+                                            return (
+                                            <div key={i} className={`relative group p-2.5 rounded-xl border transition-colors ${rankBg[i]}`}>
+                                                <div className="flex justify-between items-center mb-3">
+                                                    <div className="flex items-center">
+                                                        <span className={`text-[18px] font-black w-8 mr-1 ${rankColors[i]}`}>#{i+1}</span>
+                                                        {emp.photo && (
+                                                            <img 
+                                                                src={emp.photo} 
+                                                                alt={emp.name} 
+                                                                className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md mr-3" 
+                                                                onError={(e) => { 
+                                                                    e.target.onerror = null; 
+                                                                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(emp.name || 'A')}&background=e2e8f0&color=475569&bold=true`; 
+                                                                }} 
+                                                            />
+                                                        )}
+                                                        <span className="text-[14px] font-bold text-slate-800 font-display">{emp.name}</span>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <span className="text-[14px] font-black text-slate-800 tabular-nums">{formatCurrency(emp.revenue)}</span>
+                                                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-2 hidden sm:inline-block">/ {formatCurrency(emp.target)}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="w-full bg-slate-200/60 h-2.5 rounded-full overflow-hidden">
+                                                    <div className="h-full bg-gradient-to-r from-primary-600 to-primary-400 rounded-full group-hover:from-emerald-500 group-hover:to-emerald-400 transition-colors duration-500 relative" style={{ width: `${(emp.revenue / maxTopPerformerRevenue) * 100}%` }}>
+                                                        {/* Striped texture for infographic feel */}
+                                                        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,0.4) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.4) 75%, transparent 75%, transparent)', backgroundSize: '10px 10px' }}></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )})}
+                                    </div>
+                                </Card>
+                            </div>
+
+                            {/* ROW 3: Professional Execution Ledger */}
+                            <Card title="BDE Execution Ledger" bodyClass="p-0 overflow-hidden" className="animate-slide-up" style={{ animationDelay: '300ms' }}
+                                action={
+                                    <div className="flex items-center space-x-4">
+                                        <div className="relative group">
+                                            <Icon name="Search" size={14} className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-primary-500 transition-colors" />
+                                            <input type="text" placeholder="Search associate..." className="pl-9 pr-4 py-2 border border-slate-200 bg-slate-50/50 text-[13px] font-medium focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 focus:bg-white rounded-xl w-64 transition-all placeholder:text-slate-400 shadow-sm" value={filters.search} onChange={(e) => setFilters({...filters, search: e.target.value})} />
+                                        </div>
+                                        <select className="bg-white border border-slate-200 rounded-xl py-2 px-4 text-[13px] font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 shadow-sm cursor-pointer" value={filters.manager} onChange={(e) => setFilters({...filters, manager: e.target.value})}>
+                                            <option value="All">All Managers</option>
+                                            {availableManagers.map(m => <option key={m} value={m}>{m}</option>)}
+                                        </select>
+                                    </div>
+                                }>
+                                <div className="overflow-x-auto border-t border-slate-100">
+                                    <table className="w-full text-left border-collapse whitespace-nowrap">
+                                        <thead className="bg-slate-50/80">
+                                            <tr>
+                                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200">Associate</th>
+                                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200">Manager</th>
+                                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Target</th>
+                                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Achieved</th>
+                                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200">Progress</th>
+                                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Daily Run Rate</th>
+                                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Rev. Required</th>
+                                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Overachieved</th>
+                                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-center">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100 text-[13px]">
+                                            {filteredData.length > 0 ? filteredData.map((row, idx) => {
+                                                const target = Number(row.Target) || 0;
+                                                const achieved = Number(row['Sales Achieved']) || 0;
+                                                const expected = Number(row['Expected Sales']) || 0;
+                                                const pct = target > 0 ? (achieved / target) * 100 : 0;
+                                                
+                                                const isTopAchiever = achieved >= target;
+                                                const isOnTrack = expected >= target;
+                                                const revenueRequired = Math.max(0, target - achieved);
+                                                const overachieved = Math.max(0, achieved - target);
+
+                                                return (
+                                                    <tr key={idx} className="table-row-hover bg-white">
+                                                        <td className="px-6 py-4">
+                                                            <div className="flex items-center font-bold text-slate-900 font-display">
+                                                                {isTopAchiever && <Icon name="Award" size={14} className="text-emerald-500 mr-2" />}
+                                                                {row['Employee Name'] || '-'}
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-4 text-slate-500 font-medium">{row['Manager Name'] || '-'}</td>
+                                                        <td className="px-6 py-4 text-right tabular-nums text-slate-500 font-medium">{formatCurrency(target)}</td>
+                                                        <td className={`px-6 py-4 text-right tabular-nums font-bold ${isTopAchiever ? 'text-emerald-600' : 'text-slate-900'}`}>{formatCurrency(achieved)}</td>
+                                                        <td className="px-6 py-4 w-48">
+                                                            <div className="flex items-center">
+                                                                <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden mr-3">
+                                                                    <div className={`h-full rounded-full ${pct >= 100 ? 'bg-emerald-500' : pct >= 71 ? 'bg-primary-500' : pct >= 31 ? 'bg-amber-400' : 'bg-red-500'}`} style={{ width: `${Math.min(pct, 100)}%` }}></div>
+                                                                </div>
+                                                                <span className={`font-bold text-[12px] tabular-nums ${pct >= 100 ? 'text-emerald-600' : pct >= 71 ? 'text-primary-600' : pct >= 31 ? 'text-amber-600' : 'text-red-600'}`}>{formatPercent(pct)}</span>
+                                                            </div>
+                                                        </td>
+                                                        
+                                                        {/* Smart Logic applied perfectly here */}
+                                                        <td className="px-6 py-4 text-right tabular-nums">
+                                                            {isTopAchiever ? <span className="text-slate-300">-</span> : <span className="text-slate-600 font-medium">{formatCurrency(row['Daily Run Rate'])}</span>}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-right tabular-nums">
+                                                            {isTopAchiever ? <span className="text-slate-300">-</span> : <span className="font-semibold text-slate-800">{formatCurrency(revenueRequired)}</span>}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-right tabular-nums">
+                                                            {overachieved > 0 ? <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">+{formatCurrency(overachieved)}</span> : <span className="text-slate-300">-</span>}
+                                                        </td>
+                                                        
+                                                        {/* Clean ghost-style badges */}
+                                                        <td className="px-6 py-4 text-center">
+                                                            {pct >= 100 ? (
+                                                                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-200/60 shadow-sm"><Icon name="Award" size={12} className="mr-1.5"/> Target Met</span>
+                                                            ) : pct >= 71 ? (
+                                                                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-primary-50 text-primary-600 border border-primary-200/60 shadow-sm"><Icon name="TrendingUp" size={12} className="mr-1.5"/> Good</span>
+                                                            ) : pct >= 31 ? (
+                                                                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-amber-50 text-amber-600 border border-amber-200/60 shadow-sm"><Icon name="Minus" size={12} className="mr-1.5"/> Average</span>
+                                                            ) : (
+                                                                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-red-50 text-red-600 border border-red-200/60 shadow-sm"><Icon name="TrendingDown" size={12} className="mr-1.5"/> At Risk</span>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            }) : (
+                                                <tr><td colSpan="9" className="px-6 py-16 text-center text-slate-400 text-sm font-medium">No ledger entries match criteria.</td></tr>
+                                            )}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </Card>
                         </div>
-
-                        {/* ROW 3: Professional Execution Ledger */}
-                        <Card title="BDE Execution Ledger" bodyClass="p-0 overflow-hidden" className="animate-slide-up" style={{ animationDelay: '300ms' }}
-                            action={
-                                <div className="flex items-center space-x-4">
-                                    <div className="relative group">
-                                        <Icon name="Search" size={14} className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-primary-500 transition-colors" />
-                                        <input type="text" placeholder="Search associate..." className="pl-9 pr-4 py-2 border border-slate-200 bg-slate-50/50 text-[13px] font-medium focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 focus:bg-white rounded-xl w-64 transition-all placeholder:text-slate-400 shadow-sm" value={filters.search} onChange={(e) => setFilters({...filters, search: e.target.value})} />
-                                    </div>
-                                    <select className="bg-white border border-slate-200 rounded-xl py-2 px-4 text-[13px] font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 shadow-sm cursor-pointer" value={filters.manager} onChange={(e) => setFilters({...filters, manager: e.target.value})}>
-                                        <option value="All">All Managers</option>
-                                        {availableManagers.map(m => <option key={m} value={m}>{m}</option>)}
-                                    </select>
-                                </div>
-                            }>
-                            <div className="overflow-x-auto border-t border-slate-100">
-                                <table className="w-full text-left border-collapse whitespace-nowrap">
-                                    <thead className="bg-slate-50/80">
-                                        <tr>
-                                            <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200">Associate</th>
-                                            <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200">Manager</th>
-                                            <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Target</th>
-                                            <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Achieved</th>
-                                            <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200">Progress</th>
-                                            <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Daily Run Rate</th>
-                                            <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Rev. Required</th>
-                                            <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-right">Overachieved</th>
-                                            <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200 text-center">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100 text-[13px]">
-                                        {filteredData.length > 0 ? filteredData.map((row, idx) => {
-                                            const target = Number(row.Target) || 0;
-                                            const achieved = Number(row['Sales Achieved']) || 0;
-                                            const expected = Number(row['Expected Sales']) || 0;
-                                            const pct = target > 0 ? (achieved / target) * 100 : 0;
-                                            
-                                            const isTopAchiever = achieved >= target;
-                                            const isOnTrack = expected >= target;
-                                            const revenueRequired = Math.max(0, target - achieved);
-                                            const overachieved = Math.max(0, achieved - target);
-
-                                            return (
-                                                <tr key={idx} className="table-row-hover bg-white">
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex items-center font-bold text-slate-900 font-display">
-                                                            {isTopAchiever && <Icon name="Award" size={14} className="text-emerald-500 mr-2" />}
-                                                            {row['Employee Name'] || '-'}
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4 text-slate-500 font-medium">{row['Manager Name'] || '-'}</td>
-                                                    <td className="px-6 py-4 text-right tabular-nums text-slate-500 font-medium">{formatCurrency(target)}</td>
-                                                    <td className={`px-6 py-4 text-right tabular-nums font-bold ${isTopAchiever ? 'text-emerald-600' : 'text-slate-900'}`}>{formatCurrency(achieved)}</td>
-                                                    <td className="px-6 py-4 w-48">
-                                                        <div className="flex items-center">
-                                                            <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden mr-3">
-                                                                <div className={`h-full rounded-full ${pct >= 100 ? 'bg-emerald-500' : pct >= 71 ? 'bg-primary-500' : pct >= 31 ? 'bg-amber-400' : 'bg-red-500'}`} style={{ width: `${Math.min(pct, 100)}%` }}></div>
-                                                            </div>
-                                                            <span className={`font-bold text-[12px] tabular-nums ${pct >= 100 ? 'text-emerald-600' : pct >= 71 ? 'text-primary-600' : pct >= 31 ? 'text-amber-600' : 'text-red-600'}`}>{formatPercent(pct)}</span>
-                                                        </div>
-                                                    </td>
-                                                    
-                                                    {/* Smart Logic applied perfectly here */}
-                                                    <td className="px-6 py-4 text-right tabular-nums">
-                                                        {isTopAchiever ? <span className="text-slate-300">-</span> : <span className="text-slate-600 font-medium">{formatCurrency(row['Daily Run Rate'])}</span>}
-                                                    </td>
-                                                    <td className="px-6 py-4 text-right tabular-nums">
-                                                        {isTopAchiever ? <span className="text-slate-300">-</span> : <span className="font-semibold text-slate-800">{formatCurrency(revenueRequired)}</span>}
-                                                    </td>
-                                                    <td className="px-6 py-4 text-right tabular-nums">
-                                                        {overachieved > 0 ? <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">+{formatCurrency(overachieved)}</span> : <span className="text-slate-300">-</span>}
-                                                    </td>
-                                                    
-                                                    {/* Clean ghost-style badges */}
-                                                    <td className="px-6 py-4 text-center">
-                                                        {pct >= 100 ? (
-                                                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-200/60 shadow-sm"><Icon name="Award" size={12} className="mr-1.5"/> Target Met</span>
-                                                        ) : pct >= 71 ? (
-                                                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-primary-50 text-primary-600 border border-primary-200/60 shadow-sm"><Icon name="TrendingUp" size={12} className="mr-1.5"/> Good</span>
-                                                        ) : pct >= 31 ? (
-                                                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-amber-50 text-amber-600 border border-amber-200/60 shadow-sm"><Icon name="Minus" size={12} className="mr-1.5"/> Average</span>
-                                                        ) : (
-                                                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-red-50 text-red-600 border border-red-200/60 shadow-sm"><Icon name="TrendingDown" size={12} className="mr-1.5"/> At Risk</span>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            );
-                                        }) : (
-                                            <tr><td colSpan="9" className="px-6 py-16 text-center text-slate-400 text-sm font-medium">No ledger entries match criteria.</td></tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </Card>
                     </div>
-                </div>
-            );
-        };
+                );
+            };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(<App />);
+        </script>
+    </body>
+    </html>
