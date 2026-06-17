@@ -525,8 +525,25 @@
 
                 const topPerformers = useMemo(() => {
                     if (!filteredData.length) return [];
+                    
+                    // First, calculate the total target for each specific manager's team
+                    const teamTargets = {};
+                    filteredData.forEach(d => {
+                        const mgr = d['Manager Name'] || 'Unknown';
+                        if (!teamTargets[mgr]) teamTargets[mgr] = 0;
+                        teamTargets[mgr] += (Number(d.Target) || 0);
+                    });
+
+                    // Then, map the employees and include their manager's team target
                     return [...filteredData]
-                        .map(d => ({ name: d['Employee Name'], revenue: Number(d['Sales Achieved']) || 0, target: Number(d.Target) || 0, photo: getProfilePic(d['Employee Name'], d) }))
+                        .map(d => ({ 
+                            name: d['Employee Name'], 
+                            manager: d['Manager Name'] || 'Unknown',
+                            revenue: Number(d['Sales Achieved']) || 0, 
+                            target: Number(d.Target) || 0, 
+                            teamTarget: teamTargets[d['Manager Name'] || 'Unknown'],
+                            photo: getProfilePic(d['Employee Name'], d) 
+                        }))
                         .sort((a, b) => b.revenue - a.revenue)
                         .slice(0, 5);
                 }, [filteredData]);
@@ -677,6 +694,10 @@
                                             const rankColors = ['text-amber-400', 'text-slate-400', 'text-amber-700', 'text-slate-300', 'text-slate-300'];
                                             const rankBg = ['bg-gradient-to-r from-amber-50 to-transparent border-amber-200/50', 'bg-gradient-to-r from-slate-50 to-transparent border-slate-200/50', 'bg-gradient-to-r from-orange-50 to-transparent border-orange-200/50', 'bg-transparent border-transparent', 'bg-transparent border-transparent'];
                                             
+                                            const contributionPct = emp.teamTarget > 0 ? (emp.revenue / emp.teamTarget) * 100 : 0;
+                                            const orgContributionPct = kpis.totalTarget > 0 ? (emp.revenue / kpis.totalTarget) * 100 : 0;
+                                            const mgrFirstName = emp.manager !== 'Unknown' ? emp.manager.split(' ')[0] : 'Team';
+
                                             return (
                                             <div key={i} className={`relative group p-2.5 rounded-xl border transition-colors ${rankBg[i]}`}>
                                                 <div className="flex justify-between items-center mb-3">
@@ -695,9 +716,19 @@
                                                         )}
                                                         <span className="text-[14px] font-bold text-slate-800 font-display">{emp.name}</span>
                                                     </div>
-                                                    <div className="text-right">
-                                                        <span className="text-[14px] font-black text-slate-800 tabular-nums">{formatCurrency(emp.revenue)}</span>
-                                                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-2 hidden sm:inline-block">/ {formatCurrency(emp.target)}</span>
+                                                    <div className="text-right flex flex-col items-end">
+                                                        <div>
+                                                            <span className="text-[14px] font-black text-slate-800 tabular-nums">{formatCurrency(emp.revenue)}</span>
+                                                            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-2 hidden sm:inline-block">/ {formatCurrency(emp.target)}</span>
+                                                        </div>
+                                                        <div className="flex flex-col items-end gap-1 mt-1.5">
+                                                            <div className="inline-flex items-center px-2 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200 text-[8.5px] font-bold uppercase tracking-widest shadow-sm group-hover:bg-primary-50 group-hover:text-primary-600 group-hover:border-primary-200 transition-colors duration-300" title={`Contributed ${formatCurrency(emp.revenue)} towards the ${formatCurrency(emp.teamTarget)} target for ${mgrFirstName}'s team`}>
+                                                                {formatNumber(contributionPct)}% of Direct Team Target
+                                                            </div>
+                                                            <div className="inline-flex items-center px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 text-[8.5px] font-bold uppercase tracking-widest shadow-sm group-hover:bg-slate-900 group-hover:text-white transition-colors duration-300" title={`Contributed ${formatCurrency(emp.revenue)} towards the ${formatCurrency(kpis.totalTarget)} overall combined target`}>
+                                                                {formatNumber(orgContributionPct)}% of Overall Target
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div className="w-full bg-slate-200/60 h-2.5 rounded-full overflow-hidden">
