@@ -153,33 +153,67 @@
             </div>
         );
 
-        const KPICard = ({ title, value, subtext, icon, format = 'number', status = 'neutral' }) => {
+        const KPICard = ({ title, value, subtext, icon, format = 'number', theme = 'default' }) => {
             const formattedValue = format === 'currency' ? formatCurrency(value) : format === 'percent' ? formatPercent(value) : formatNumber(value);
             
-            const config = {
-                primary: { iconBg: 'bg-primary-50 text-primary-600', iconGlow: 'shadow-[0_0_15px_rgba(37,99,235,0.15)]', trendText: 'text-primary-600' },
-                success: { iconBg: 'bg-emerald-50 text-emerald-600', iconGlow: 'shadow-[0_0_15px_rgba(16,185,129,0.15)]', trendText: 'text-emerald-600' },
-                danger: { iconBg: 'bg-red-50 text-red-600', iconGlow: 'shadow-[0_0_15px_rgba(220,38,38,0.15)]', trendText: 'text-red-600' },
-                neutral: { iconBg: 'bg-slate-100 text-slate-600', iconGlow: '', trendText: 'text-slate-500' }
-            }[status];
+            const themes = {
+                default: {
+                    bg: "bg-white border-white",
+                    title: "text-slate-500",
+                    value: "text-transparent bg-clip-text bg-gradient-to-br from-slate-900 to-slate-600",
+                    iconBg: "bg-slate-100 text-slate-600",
+                    iconGlow: "",
+                    subtext: "bg-slate-50 text-slate-500 border-slate-100"
+                },
+                dark: {
+                    bg: "bg-card-dark border-slate-700",
+                    title: "text-slate-400",
+                    value: "text-white",
+                    iconBg: "bg-white/10 text-primary-400",
+                    iconGlow: "shadow-glow-primary",
+                    subtext: "bg-white/10 text-slate-300 border-white/10"
+                },
+                success: {
+                    bg: "bg-gradient-to-br from-emerald-500 to-emerald-700 border-emerald-600",
+                    title: "text-emerald-100",
+                    value: "text-white",
+                    iconBg: "bg-white/20 text-white",
+                    iconGlow: "shadow-[0_0_15px_rgba(255,255,255,0.3)]",
+                    subtext: "bg-black/10 text-emerald-50 border-black/10"
+                },
+                danger: {
+                    bg: "bg-gradient-to-br from-white to-red-50 border-red-100",
+                    title: "text-slate-500",
+                    value: "text-slate-800",
+                    iconBg: "bg-red-100 text-red-600",
+                    iconGlow: "shadow-[0_0_15px_rgba(220,38,38,0.15)]",
+                    subtext: "bg-red-50 text-red-600 border-red-200"
+                }
+            };
+
+            const t = themes[theme] || themes.default;
 
             return (
-                <div className="bg-white rounded-2xl p-7 border border-white shadow-glass relative overflow-hidden group hover:-translate-y-1 hover:shadow-float transition-all duration-400">
-                    <div className="flex justify-between items-start mb-4">
-                        <p className="text-[12px] font-bold text-slate-500 uppercase tracking-widest font-display">{title}</p>
-                        <div className={`p-2.5 rounded-xl ${config.iconBg} ${config.iconGlow} transition-transform duration-500 group-hover:scale-110`}>
+                <div className={`rounded-2xl p-7 border shadow-glass relative overflow-hidden group hover:-translate-y-1 hover:shadow-float transition-all duration-400 ${t.bg}`}>
+                    {/* Abstract element for dark and success themes to give a premium glow */}
+                    {(theme === 'dark' || theme === 'success') && (
+                        <div className="absolute -right-6 -top-6 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 pointer-events-none"></div>
+                    )}
+                    
+                    <div className="flex justify-between items-start mb-4 relative z-10">
+                        <p className={`text-[12px] font-bold uppercase tracking-widest font-display ${t.title}`}>{title}</p>
+                        <div className={`p-2.5 rounded-xl transition-transform duration-500 group-hover:scale-110 ${t.iconBg} ${t.iconGlow}`}>
                             <Icon name={icon} size={20} />
                         </div>
                     </div>
-                    <div>
-                        {/* Premium gradient text effect for numbers */}
-                        <h2 className="text-4xl font-extrabold font-display tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-slate-900 to-slate-600 tabular-nums pb-1">
+                    <div className="relative z-10">
+                        <h2 className={`text-4xl font-extrabold font-display tracking-tight tabular-nums pb-1 ${t.value}`}>
                             {formattedValue}
                         </h2>
                     </div>
                     {subtext && (
-                        <div className="mt-4 flex items-center">
-                            <div className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-slate-50 border border-slate-100 ${config.trendText}`}>
+                        <div className="mt-4 flex items-center relative z-10">
+                            <div className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${t.subtext}`}>
                                 {subtext}
                             </div>
                         </div>
@@ -472,9 +506,9 @@
                         {/* ROW 1: Financial KPIs & Hall of Fame Grid */}
                         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 animate-slide-up" style={{ animationDelay: '100ms' }}>
                             <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <KPICard title="Total Target" value={kpis.totalTarget} format="currency" icon="Target" status="neutral" />
-                                <KPICard title="Revenue Realized" value={kpis.totalAchieved} format="currency" icon="CheckCircle" status="success" subtext={`${formatPercent(kpis.achievementPercent)} Achieved`} />
-                                <KPICard title="Shortfall Gap" value={kpis.shortfall} format="currency" icon="AlertTriangle" status={kpis.shortfall > 0 ? "danger" : "neutral"} subtext={`${formatPercent(kpis.shortfallPercent)} Remaining`} />
+                                <KPICard title="Total Target" value={kpis.totalTarget} format="currency" icon="Target" theme="dark" />
+                                <KPICard title="Revenue Achieved" value={kpis.totalAchieved} format="currency" icon="CheckCircle" theme="success" subtext={`${formatPercent(kpis.achievementPercent)} Achieved`} />
+                                <KPICard title="Shortfall Gap" value={kpis.shortfall} format="currency" icon="AlertTriangle" theme={kpis.shortfall > 0 ? "danger" : "default"} subtext={`${formatPercent(kpis.shortfallPercent)} Remaining`} />
                             </div>
                             
                             <div className="xl:col-span-4 grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -485,7 +519,7 @@
 
                         {/* ROW 2: Analytical Charts */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-slide-up" style={{ animationDelay: '200ms' }}>
-                            <Card title="Target Realization" className="lg:col-span-1" bodyClass="p-6 pt-2">
+                            <Card title="Target Achievement" className="lg:col-span-1" bodyClass="p-6 pt-2">
                                 <div className="relative h-[240px] flex items-center justify-center group">
                                     <ChartComponent type="doughnut" data={doughnutData} options={doughnutOptions} height="100%" />
                                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none transform transition-transform duration-500 group-hover:scale-110">
@@ -505,7 +539,7 @@
                                 </div>
                             </Card>
 
-                            <Card title="Manager Execution Velocity" className="lg:col-span-2" bodyClass="p-6 pt-2"
+                            <Card title="Manager Performance" className="lg:col-span-2" bodyClass="p-6 pt-2"
                                 action={
                                     <div className="flex space-x-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
                                         <div className="flex items-center"><span className="w-2.5 h-2.5 rounded-sm bg-primary-500 mr-2"></span>Achieved</div>
@@ -521,7 +555,7 @@
                         {/* ROW 2.5: NEW INFOGRAPHICS */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-slide-up" style={{ animationDelay: '250ms' }}>
                             {/* Team Health Doughnut */}
-                            <Card title="Team Health Distribution" className="lg:col-span-1" bodyClass="p-6 pt-2">
+                            <Card title="Team Performance Overview" className="lg:col-span-1" bodyClass="p-6 pt-2">
                                 <div className="relative h-[200px] flex items-center justify-center group mt-2">
                                     {teamHealth && <ChartComponent type="doughnut" data={teamHealth.chartData} options={teamHealthOptions} height="100%" />}
                                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none transform transition-transform duration-500 group-hover:scale-110">
@@ -538,7 +572,7 @@
                             </Card>
 
                             {/* Top 5 Leaderboard */}
-                            <Card title="Top Revenue Drivers" className="lg:col-span-2" bodyClass="p-6 pt-2">
+                            <Card title="Top Sales Contributors" className="lg:col-span-2" bodyClass="p-6 pt-2">
                                 <div className="flex flex-col justify-center h-full space-y-6 mt-1">
                                     {topPerformers.map((emp, i) => (
                                         <div key={i} className="relative group">
